@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Александр Невский — человек, который рисует сны</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'float': 'float 20s ease-in-out infinite',
+                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #000; color: #e0e0ff; }
+        .parallax { perspective: 1px; height: 100vh; overflow-x: hidden; overflow-y: auto; transform-style: preserve-3d; }
+        .layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-style: preserve-3d; }
+        .back { 
+            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3132&h=2000&fit=crop') center/cover no-repeat fixed;
+            transform: translateZ(-2px) scale(3);
+            opacity: 0.4;
+        }
+        .mid {
+            background: url('https://images.unsplash.com/photo-1543783207-5d04aac5f11d?q=80&w=2000') center/cover no-repeat;
+            transform: translateZ(-1px) scale(2);
+            opacity: 0.3;
+        }
+        .neuro-paint {
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(100, 100, 255, 0.3); border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen parallax antialiased">
+
+    <div class="layer back"></div>
+    <div class="layer mid"></div>
+
+    <!-- Навигация -->
+    <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/40 border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-wider">АЛЕКСАНДР НЕВСКИЙ</h1>
+            <div class="flex gap-8">
+                <button onclick="scrollToSection('home')" class="nav-btn">Главная</button>
+                <button onclick="scrollToSection('timeline')" class="nav-btn">Хронология</button>
+                <button onclick="scrollToSection('gallery')" class="nav-btn">Картины</button>
+                <button onclick="scrollToSection('quotes')" class="nav-btn">Цитаты</button>
+            </div>
+            <div class="text-xs opacity-60">1987 – ∞</div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="relative z-10 min-h-screen flex items-center justify-center text-center px-6">
+        <div>
+            <h1 class="text-7xl md:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-600 animate-pulse-slow">
+                НЕВСКИЙ
+            </h1>
+            <p class="text-3xl md:text-5xl mb-8 opacity-90">Изобретатель цвета, укротитель сна</p>
+            <p class="text-xl opacity-70 max-w-2xl mx-auto leading-relaxed">
+                «Я не рисую картины. Я daю краске свободу дышать эмоциями тех — кто стоит перед ней.»
+            </p>
+            <button onclick="scrollToSection('timeline')" class="mt-16 px-12 py-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-xl font-medium transition-all hover:scale-105">
+                Узнать историю →
+            </button>
+        </div>
+    </section>
+
+    <!-- Хронология -->
+    <section id="timeline" class="relative z-10 py-32 px-6">
+        <div class="container mx-auto max-w-6xl">
+            <h2 class="text-6xl font-bold text-center mb-20">Хронология гения</h2>
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- 1987 -->
+                <div class="timeline-card" data-year="1987" data-title="Рождение" data-text="13 марта 1987, Новосибирск. В момент первого крика все лампы в роддоме мигнули синим.">
+                    <div class="year">1987</div>
+                    <div class="title">Рождение</div>
+                </div>
+                <!-- 1994 -->
+                <div class="timeline-card" data-year="1994" data-title="Эмоциональный будильник" data-text="7 лет. Разобрал компьютер отца и создал будильник, который звонит только после хорошего сна.">
+                    <div class="year">1994</div>
+                    <div class="title">Первый механизм</div>
+                </div>
+                <!-- 2001 -->
+                <div class="timeline-card" data-year="2001" data-title="47 картин из ниоткуда" data-text="14 лет. Сбежал из дома с акварелью. Вернулся через 3 месяца с 47 полотнами несуществующих мест.">
+                    <div class="year">2001</div>
+                    <div class="title">Побег</div>
+                </div>
+                <!-- 2011 -->
+                <div class="timeline-card" data-year="2011" data-title="Нейро-краска" data-text="Изобрёл материал, меняющий цвет и форму от эмоций зрителя. Patent pending… навсегда.">
+                    <div class="year">2011</div>
+                    <div class="title">Революция</div>
+                </div>
+                <!-- 2015 -->
+                <div class="timeline-card" data-year="2015" data-title="«Сны Сибири»" data-text="Картина в Эрмитаже, которая каждую ночь показывает новый сюжет.">
+                    <div class="year">2015</div>
+                    <div class="title">Шедевр</div>
+                </div>
+                <!-- 2023 -->
+                <div class="timeline-card" data-year="2023" data-title="Исчезновение" data-text="Экспедиция на Байкал. Последнее фото — северное сияние подо льдом.">
+                    <div class="year">2023</div>
+                    <div class="title">???</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Галерея с нейро-краской -->
+    <section id="gallery" class="relative z-10 py-32 px-6 bg-black/40">
+        <div class="container mx-auto max-w-7xl">
+            <h2 class="text-6xl font-bold text-center mb-20">Картины, которые дышат</h2>
+            <p class="text-center text-xl mb-12 opacity-80">Двигайте мышью по полотнам — краска чувствует вас</p>
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                    <div class="neuro-paint w-full h-96 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900"></div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-2xl font-bold">Сны Сибири</h3>
+                        <p class="opacity-75">2015 – настоящее время</p>
+                    </div>
+                </div>
+                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                    <div class="neuro-paint w-full h-96 bg-gradient-to-tr from-pink-900 via-indigo-900 to-teal-900"></div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-2xl font-bold">Трещина подо льдом</h3>
+                        <p class="opacity-75">2023</p>
+                    </div>
+                </div>
+                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                    <div class="neuro-paint w-full h-96 bg-gradient-to-bl from-emerald-900 via-purple-900 to-amber-900"></div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-2xl font-bold">Эмоция №7</h3>
+                        <p class="opacity-75">неизвестно</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Цитаты -->
+    <section id="quotes" class="relative z-10 py-32 px-6">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-6xl font-bold text-center mb-20"> Его слова</h2>
+            <div class="quote-carousel relative h-80 flex items-center justify-center">
+                <div class="quotes absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-1000">
+                    <p class="text-4xl md:text-6xl text-center font-light italic leading-tight"></p>
+                </div>
+            </div>
+            <div class="flex justify-center gap-4 mt-10">
+                <button onclick="pauseQuotes()" id="pauseBtn" class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 rounded-full">Пауза</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="relative z-10 text-center py-20 opacity-50 text-sm">
+        Вымышленная вселенная • 2025 • Краска всё ещё жива
+    </footer>
+
+    <!-- Модальное окно для хронологии -->
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="relative bg-black/60 backdrop-blur-xl border border-white/20 rounded-3xl p-12 max-w-2xl animate-fade-in">
+            <h3 id="modalYear" class="text-6xl font-bold mb-4"></h3>
+            <h4 id="modalTitle" class="text-3xl mb-6 opacity-80"></h4>
+            <p id="modalText" class="text-xl leading-relaxed"></p>
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-4xl opacity-50 hover:opacity-100">×</button>
+        </div>
+    </div>
+
+    <script>
+        // Плавный скролл
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Модальное окно хронологии
+        document.querySelectorAll('.timeline-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.getElementById('modalYear').textContent = card.dataset.year;
+                document.getElementById('modalTitle').textContent = card.dataset.title;
+                document.getElementById('modalText').textContent = card.dataset.text;
+                document.getElementById('modal').classList.remove('hidden');
+            });
+        });
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // Нейро-краска
+        function paintReact(e, el) {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            el.querySelector('.neuro-paint').style.background = `radial-gradient(circle at ${x}px ${y}px, #a78bfa, #22d3ee, #f472b6, #fcd34d 80%)`;
+        }
+
+        function paintReset(el) {
+            el.querySelector('.neuro-paint').style.background = '';
+        }
+
+        // Цитаты карусель
+        const quotes = [
+            "Я не рисую то, что вижу. Я рисую то, что другие боятся увидеть.",
+            "Каждая картина — это дверь. Вопрос только, хватит ли у тебя смелости войти.",
+            "Цвет — это эмоция, которую ещё не придумали назвать.",
+            "Когда краска начинает жить своей жизнью — значит, я сделал всё правильно.",
+            "Где-то между снами и явью есть место, где я до сих пор работаю."
+        ];
+        let current = 0;
+        let interval;
+        const carousel = document.querySelector('.quote-carousel .quotes p');
+
+        function showQuote() {
+            carousel.parentElement.style.opacity = 0;
+            setTimeout(() => {
+                carousel.textContent = '"' + quotes[current] + '"';
+                carousel.parentElement.style.opacity = 1;
+                current = (current + 1) % quotes.length;
+            }, 1000);
+        }
+
+        function startQuotes() {
+            showQuote();
+            interval = setInterval(showQuote, 7000);
+        }
+
+        function pauseQuotes() {
+            clearInterval(interval);
+            document.getElementById('pauseBtn').textContent = 'Продолжить';
+            document.getElementById('pauseBtn').onclick = () => {
+                startQuotes();
+                document.getElementById('pauseBtn').textContent = 'Пауза';
+                document.getElementById('pauseBtn').onclick = pauseQuotes;
+            };
+        }
+
+        startQuotes();
+
+        // Анимация появления
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.timeline-card, .neuro-canvas, section').forEach(el => {
+            el.classList.add('opacity-0', 'translate-y-10');
+            el.style.transition = 'all 1s cubic-bezier(0.22, 1, 0.36, 1)';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
