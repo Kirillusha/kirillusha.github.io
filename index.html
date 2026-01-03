@@ -5,139 +5,433 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Александр Невский — человек, который рисует сны</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    animation: {
-                        'float': 'float 20s ease-in-out infinite',
-                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background: #000; color: #e0e0ff; }
-        .parallax { perspective: 1px; height: 100vh; overflow-x: hidden; overflow-y: auto; transform-style: preserve-3d; }
-        .layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-style: preserve-3d; }
-        .back { 
-            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3132&h=2000&fit=crop') center/cover no-repeat fixed;
-            transform: translateZ(-2px) scale(3);
-            opacity: 0.4;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #fafafa; 
+            color: #1a1a1a; 
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
         }
-        .mid {
-            background: url('https://images.unsplash.com/photo-1543783207-5d04aac5f11d?q=80&w=2000') center/cover no-repeat;
-            transform: translateZ(-1px) scale(2);
+        
+        /* Градиентные акценты */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Карточки с тенями */
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        /* Галерея изображений */
+        .art-piece {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            cursor: pointer;
+            aspect-ratio: 1;
+        }
+        
+        .art-piece img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .art-piece:hover img {
+            transform: scale(1.08);
+        }
+        
+        .art-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .art-piece:hover .art-overlay {
+            opacity: 1;
+        }
+        
+        /* Анимация появления */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 2px solid #1a1a1a;
+            background: white;
+            color: #1a1a1a;
+        }
+        
+        .btn:hover {
+            background: #1a1a1a;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+        
+        /* Скроллбар */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(135deg, #667eea, #764ba2); 
+            border-radius: 10px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Хронология */
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            padding-bottom: 40px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 24px;
+            width: 2px;
+            height: calc(100% - 24px);
+            background: linear-gradient(to bottom, #667eea, #e0e0e0);
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        /* Цитата */
+        .quote-container {
+            position: relative;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border-left: 4px solid #667eea;
+            border-radius: 16px;
+        }
+        
+        .quote-mark {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 80px;
+            line-height: 1;
+            color: #667eea;
             opacity: 0.3;
+            font-family: Georgia, serif;
         }
-        .neuro-paint {
-            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        
+        /* Плавное появление секций */
+        section {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(100, 100, 255, 0.3); border-radius: 4px; }
+        
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
     </style>
 </head>
-<body class="min-h-screen parallax antialiased">
-
-    <div class="layer back"></div>
-    <div class="layer mid"></div>
+<body class="min-h-screen antialiased">
 
     <!-- Навигация -->
-    <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/40 border-b border-white/10">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wider">АЛЕКСАНДР НЕВСКИЙ</h1>
-            <div class="flex gap-8">
-                <button onclick="scrollToSection('home')" class="nav-btn">Главная</button>
-                <button onclick="scrollToSection('timeline')" class="nav-btn">Хронология</button>
-                <button onclick="scrollToSection('gallery')" class="nav-btn">Картины</button>
-                <button onclick="scrollToSection('quotes')" class="nav-btn">Цитаты</button>
+    <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
+        <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-tight">АЛЕКСАНДР НЕВСКИЙ</h1>
+            <div class="hidden md:flex gap-8 text-sm font-medium">
+                <button onclick="scrollToSection('home')" class="hover:text-purple-600 transition">Главная</button>
+                <button onclick="scrollToSection('timeline')" class="hover:text-purple-600 transition">Хронология</button>
+                <button onclick="scrollToSection('gallery')" class="hover:text-purple-600 transition">Картины</button>
+                <button onclick="scrollToSection('quotes')" class="hover:text-purple-600 transition">Цитаты</button>
             </div>
-            <div class="text-xs opacity-60">1987 – ∞</div>
+            <div class="text-xs text-gray-500 font-mono">1987 – ∞</div>
         </div>
     </nav>
 
     <!-- Hero -->
-    <section id="home" class="relative z-10 min-h-screen flex items-center justify-center text-center px-6">
-        <div>
-            <h1 class="text-7xl md:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-600 animate-pulse-slow">
-                НЕВСКИЙ
+    <section id="home" class="min-h-screen flex items-center justify-center px-6 pt-20">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-8">
+                Художник • Изобретатель • Мечтатель
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black tracking-tight mb-6 gradient-text leading-tight">
+                АЛЕКСАНДР<br>НЕВСКИЙ
             </h1>
-            <p class="text-3xl md:text-5xl mb-8 opacity-90">Изобретатель цвета, укротитель сна</p>
-            <p class="text-xl opacity-70 max-w-2xl mx-auto leading-relaxed">
-                «Я не рисую картины. Я daю краске свободу дышать эмоциями тех — кто стоит перед ней.»
+            <p class="text-2xl md:text-4xl mb-6 text-gray-700 font-light">Изобретатель цвета, укротитель сна</p>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mb-12">
+                «Я не рисую картины. Я даю краске свободу дышать эмоциями тех — кто стоит перед ней.»
             </p>
-            <button onclick="scrollToSection('timeline')" class="mt-16 px-12 py-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-xl font-medium transition-all hover:scale-105">
-                Узнать историю →
-            </button>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <button onclick="scrollToSection('timeline')" class="btn btn-primary">
+                    Узнать историю
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </button>
+                <button onclick="scrollToSection('gallery')" class="btn">
+                    Смотреть работы
+                </button>
+            </div>
         </div>
     </section>
 
     <!-- Хронология -->
-    <section id="timeline" class="relative z-10 py-32 px-6">
-        <div class="container mx-auto max-w-6xl">
-            <h2 class="text-6xl font-bold text-center mb-20">Хронология гения</h2>
-            <div class="grid md:grid-cols-4 gap-8">
+    <section id="timeline" class="py-32 px-6 bg-white">
+        <div class="container mx-auto max-w-4xl">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl md:text-6xl font-bold mb-4">Хронология гения</h2>
+                <p class="text-gray-600 text-lg">Путешествие через время и творчество</p>
+            </div>
+            
+            <div class="space-y-0">
                 <!-- 1987 -->
-                <div class="timeline-card" data-year="1987" data-title="Рождение" data-text="13 марта 1987, Новосибирск. В момент первого крика все лампы в роддоме мигнули синим.">
-                    <div class="year">1987</div>
-                    <div class="title">Рождение</div>
+                <div class="timeline-item cursor-pointer hover:opacity-80 transition" onclick="openModal('1987', 'Рождение', '13 марта 1987, Новосибирск. В момент первого крика все лампы в роддоме мигнули синим.')">
+                    <div class="card p-6">
+                        <div class="text-sm font-mono text-purple-600 mb-2">1987</div>
+                        <h3 class="text-2xl font-bold mb-2">Рождение</h3>
+                        <p class="text-gray-600">Первый крик, первая искра гения</p>
+                    </div>
                 </div>
+
                 <!-- 1994 -->
-                <div class="timeline-card" data-year="1994" data-title="Эмоциональный будильник" data-text="7 лет. Разобрал компьютер отца и создал будильник, который звонит только после хорошего сна.">
-                    <div class="year">1994</div>
-                    <div class="title">Первый механизм</div>
+                <div class="timeline-item cursor-pointer hover:opacity-80 transition" onclick="openModal('1994', 'Эмоциональный будильник', '7 лет. Разобрал компьютер отца и создал будильник, который звонит только после хорошего сна.')">
+                    <div class="card p-6">
+                        <div class="text-sm font-mono text-purple-600 mb-2">1994</div>
+                        <h3 class="text-2xl font-bold mb-2">Первый механизм</h3>
+                        <p class="text-gray-600">Будильник, чувствующий сны</p>
+                    </div>
                 </div>
+
                 <!-- 2001 -->
-                <div class="timeline-card" data-year="2001" data-title="47 картин из ниоткуда" data-text="14 лет. Сбежал из дома с акварелью. Вернулся через 3 месяца с 47 полотнами несуществующих мест.">
-                    <div class="year">2001</div>
-                    <div class="title">Побег</div>
+                <div class="timeline-item cursor-pointer hover:opacity-80 transition" onclick="openModal('2001', '47 картин из ниоткуда', '14 лет. Сбежал из дома с акварелью. Вернулся через 3 месяца с 47 полотнами несуществующих мест.')">
+                    <div class="card p-6">
+                        <div class="text-sm font-mono text-purple-600 mb-2">2001</div>
+                        <h3 class="text-2xl font-bold mb-2">Побег</h3>
+                        <p class="text-gray-600">47 картин несуществующих мест</p>
+                    </div>
                 </div>
+
                 <!-- 2011 -->
-                <div class="timeline-card" data-year="2011" data-title="Нейро-краска" data-text="Изобрёл материал, меняющий цвет и форму от эмоций зрителя. Patent pending… навсегда.">
-                    <div class="year">2011</div>
-                    <div class="title">Революция</div>
+                <div class="timeline-item cursor-pointer hover:opacity-80 transition" onclick="openModal('2011', 'Нейро-краска', 'Изобрёл материал, меняющий цвет и форму от эмоций зрителя. Patent pending… навсегда.')">
+                    <div class="card p-6">
+                        <div class="text-sm font-mono text-purple-600 mb-2">2011</div>
+                        <h3 class="text-2xl font-bold mb-2">Революция</h3>
+                        <p class="text-gray-600">Краска, реагирующая на эмоции</p>
+                    </div>
                 </div>
+
                 <!-- 2015 -->
-                <div class="timeline-card" data-year="2015" data-title="«Сны Сибири»" data-text="Картина в Эрмитаже, которая каждую ночь показывает новый сюжет.">
-                    <div class="year">2015</div>
-                    <div class="title">Шедевр</div>
+                <div class="timeline-item cursor-pointer hover:opacity-80 transition" onclick="openModal('2015', 'Сны Сибири', 'Картина в Эрмитаже, которая каждую ночь показывает новый сюжет.')">
+                    <div class="card p-6">
+                        <div class="text-sm font-mono text-purple-600 mb-2">2015</div>
+                        <h3 class="text-2xl font-bold mb-2">Шедевр</h3>
+                        <p class="text-gray-600">Картина, живущая своей жизнью</p>
+                    </div>
                 </div>
+
                 <!-- 2023 -->
-                <div class="timeline-card" data-year="2023" data-title="Исчезновение" data-text="Экспедиция на Байкал. Последнее фото — северное сияние подо льдом.">
-                    <div class="year">2023</div>
-                    <div class="title">???</div>
+                <div class="timeline-item cursor-pointer hover:opacity-80 transition" onclick="openModal('2023', 'Исчезновение', 'Экспедиция на Байкал. Последнее фото — северное сияние подо льдом.')">
+                    <div class="card p-6">
+                        <div class="text-sm font-mono text-purple-600 mb-2">2023</div>
+                        <h3 class="text-2xl font-bold mb-2">???</h3>
+                        <p class="text-gray-600">Тайна, скрытая подо льдом</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Галерея с нейро-краской -->
-    <section id="gallery" class="relative z-10 py-32 px-6 bg-black/40">
+    <!-- Галерея -->
+    <section id="gallery" class="py-32 px-6 bg-gradient-to-br from-purple-50 to-pink-50">
         <div class="container mx-auto max-w-7xl">
-            <h2 class="text-6xl font-bold text-center mb-20">Картины, которые дышат</h2>
-            <p class="text-center text-xl mb-12 opacity-80">Двигайте мышью по полотнам — краска чувствует вас</p>
-            <div class="grid md:grid-cols-3 gap-10">
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
-                    <div class="neuro-paint w-full h-96 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900"></div>
-                    <div class="p-6 text-center">
-                        <h3 class="text-2xl font-bold">Сны Сибири</h3>
-                        <p class="opacity-75">2015 – настоящее время</p>
+            <div class="text-center mb-20">
+                <h2 class="text-5xl md:text-6xl font-bold mb-4">Картины, которые дышат</h2>
+                <p class="text-gray-600 text-lg">Интерактивная коллекция живых произведений</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Картина 1 -->
+                <div class="art-piece group">
+                    <img src="https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=800&q=80" alt="Сны Сибири">
+                    <div class="art-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Сны Сибири</h3>
+                        <p class="text-sm opacity-90">2015 – настоящее время</p>
+                        <p class="text-xs mt-2 opacity-75">Живая картина в Эрмитаже</p>
                     </div>
                 </div>
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
-                    <div class="neuro-paint w-full h-96 bg-gradient-to-tr from-pink-900 via-indigo-900 to-teal-900"></div>
-                    <div class="p-6 text-center">
-                        <h3 class="text-2xl font-bold">Трещина подо льдом</h3>
-                        <p class="opacity-75">2023</p>
+
+                <!-- Картина 2 -->
+                <div class="art-piece group">
+                    <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&q=80" alt="Трещина подо льдом">
+                    <div class="art-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Трещина подо льдом</h3>
+                        <p class="text-sm opacity-90">2023</p>
+                        <p class="text-xs mt-2 opacity-75">Последняя работа</p>
                     </div>
                 </div>
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
-                    <div class="neuro-paint w-full h-96 bg-gradient-to-bl from-emerald-900 via-purple-900 to-amber-900"></div>
-                    <div class="p-6 text-center">
-                        <h3 class="text-2xl font-bold">Эмоция №7</h3>
-                        <p class="opacity-75">неизвестно</p>
+
+                <!-- Картина 3 -->
+                <div class="art-piece group">
+                    <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80" alt="Эмоция №7">
+                    <div class="art-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Эмоция №7</h3>
+                        <p class="text-sm opacity-90">Неизвестно</p>
+                        <p class="text-xs mt-2 opacity-75">Чувство без названия</p>
+                    </div>
+                </div>
+
+                <!-- Картина 4 -->
+                <div class="art-piece group">
+                    <img src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=800&q=80" alt="Северное сияние души">
+                    <div class="art-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Северное сияние души</h3>
+                        <p class="text-sm opacity-90">2017</p>
+                        <p class="text-xs mt-2 opacity-75">Нейро-краска v2.0</p>
+                    </div>
+                </div>
+
+                <!-- Картина 5 -->
+                <div class="art-piece group">
+                    <img src="https://images.unsplash.com/photo-1549289524-06cf8837ace5?w=800&q=80" alt="Цифровая душа">
+                    <div class="art-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Цифровая душа</h3>
+                        <p class="text-sm opacity-90">2019</p>
+                        <p class="text-xs mt-2 opacity-75">Эксперимент с AI</p>
+                    </div>
+                </div>
+
+                <!-- Картина 6 -->
+                <div class="art-piece group">
+                    <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&q=80" alt="Портал">
+                    <div class="art-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Портал</h3>
+                        <p class="text-sm opacity-90">2020</p>
+                        <p class="text-xs mt-2 opacity-75">Вход в иное измерение</p>
                     </div>
                 </div>
             </div>
@@ -145,68 +439,91 @@
     </section>
 
     <!-- Цитаты -->
-    <section id="quotes" class="relative z-10 py-32 px-6">
+    <section id="quotes" class="py-32 px-6 bg-white">
         <div class="container mx-auto max-w-4xl">
-            <h2 class="text-6xl font-bold text-center mb-20"> Его слова</h2>
-            <div class="quote-carousel relative h-80 flex items-center justify-center">
-                <div class="quotes absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-1000">
-                    <p class="text-4xl md:text-6xl text-center font-light italic leading-tight"></p>
-                </div>
+            <div class="text-center mb-20">
+                <h2 class="text-5xl md:text-6xl font-bold mb-4">Его слова</h2>
+                <p class="text-gray-600 text-lg">Мысли, изменившие искусство</p>
             </div>
-            <div class="flex justify-center gap-4 mt-10">
-                <button onclick="pauseQuotes()" id="pauseBtn" class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 rounded-full">Пауза</button>
+            
+            <div class="quote-container mb-8" id="quoteDisplay">
+                <div class="quote-mark">"</div>
+                <p class="text-2xl md:text-3xl font-light leading-relaxed text-gray-800 relative z-10" id="quoteText"></p>
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="prevQuote()" class="btn">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Назад
+                </button>
+                <button onclick="toggleQuotes()" id="pauseBtn" class="btn btn-primary">Пауза</button>
+                <button onclick="nextQuote()" class="btn">
+                    Вперед
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
             </div>
         </div>
     </section>
 
-    <footer class="relative z-10 text-center py-20 opacity-50 text-sm">
-        Вымышленная вселенная • 2025 • Краска всё ещё жива
+    <!-- Footer -->
+    <footer class="py-16 px-6 bg-gray-900 text-white text-center">
+        <div class="container mx-auto max-w-4xl">
+            <h3 class="text-2xl font-bold mb-4">Александр Невский</h3>
+            <p class="text-gray-400 mb-6">Художник, изобретатель, легенда</p>
+            <div class="flex justify-center gap-6 mb-8">
+                <a href="#" class="text-gray-400 hover:text-white transition">Instagram</a>
+                <a href="#" class="text-gray-400 hover:text-white transition">Twitter</a>
+                <a href="#" class="text-gray-400 hover:text-white transition">YouTube</a>
+            </div>
+            <div class="text-sm text-gray-500">
+                Вымышленная вселенная • 2025 • Краска всё ещё жива
+            </div>
+        </div>
     </footer>
 
-    <!-- Модальное окно для хронологии -->
-    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeModal()"></div>
-        <div class="relative bg-black/60 backdrop-blur-xl border border-white/20 rounded-3xl p-12 max-w-2xl animate-fade-in">
-            <h3 id="modalYear" class="text-6xl font-bold mb-4"></h3>
-            <h4 id="modalTitle" class="text-3xl mb-6 opacity-80"></h4>
-            <p id="modalText" class="text-xl leading-relaxed"></p>
-            <button onclick="closeModal()" class="absolute top-6 right-6 text-4xl opacity-50 hover:opacity-100">×</button>
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div id="modalYear" class="text-5xl font-bold gradient-text mb-4"></div>
+            <h4 id="modalTitle" class="text-3xl font-bold mb-6"></h4>
+            <p id="modalText" class="text-lg text-gray-600 leading-relaxed"></p>
         </div>
     </div>
 
     <script>
         // Плавный скролл
         function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Модальное окно хронологии
-        document.querySelectorAll('.timeline-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.getElementById('modalYear').textContent = card.dataset.year;
-                document.getElementById('modalTitle').textContent = card.dataset.title;
-                document.getElementById('modalText').textContent = card.dataset.text;
-                document.getElementById('modal').classList.remove('hidden');
-            });
-        });
+        // Модальное окно
+        function openModal(year, title, text) {
+            document.getElementById('modalYear').textContent = year;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            document.getElementById('modal').classList.add('active');
+        }
 
         function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('active');
         }
 
-        // Нейро-краска
-        function paintReact(e, el) {
-            const rect = el.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            el.querySelector('.neuro-paint').style.background = `radial-gradient(circle at ${x}px ${y}px, #a78bfa, #22d3ee, #f472b6, #fcd34d 80%)`;
-        }
+        // Закрытие модалки по ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
 
-        function paintReset(el) {
-            el.querySelector('.neuro-paint').style.background = '';
-        }
+        // Закрытие модалки по клику на фон
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
+        });
 
-        // Цитаты карусель
+        // Цитаты
         const quotes = [
             "Я не рисую то, что вижу. Я рисую то, что другие боятся увидеть.",
             "Каждая картина — это дверь. Вопрос только, хватит ли у тебя смелости войти.",
@@ -214,49 +531,76 @@
             "Когда краска начинает жить своей жизнью — значит, я сделал всё правильно.",
             "Где-то между снами и явью есть место, где я до сих пор работаю."
         ];
-        let current = 0;
-        let interval;
-        const carousel = document.querySelector('.quote-carousel .quotes p');
+        
+        let currentQuote = 0;
+        let quoteInterval;
+        let isPaused = false;
 
-        function showQuote() {
-            carousel.parentElement.style.opacity = 0;
+        function showQuote(index) {
+            const quoteText = document.getElementById('quoteText');
+            const quoteDisplay = document.getElementById('quoteDisplay');
+            
+            quoteDisplay.style.opacity = '0';
+            quoteDisplay.style.transform = 'translateY(20px)';
+            
             setTimeout(() => {
-                carousel.textContent = '"' + quotes[current] + '"';
-                carousel.parentElement.style.opacity = 1;
-                current = (current + 1) % quotes.length;
-            }, 1000);
+                quoteText.textContent = quotes[index];
+                quoteDisplay.style.opacity = '1';
+                quoteDisplay.style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        function nextQuote() {
+            currentQuote = (currentQuote + 1) % quotes.length;
+            showQuote(currentQuote);
+        }
+
+        function prevQuote() {
+            currentQuote = (currentQuote - 1 + quotes.length) % quotes.length;
+            showQuote(currentQuote);
         }
 
         function startQuotes() {
-            showQuote();
-            interval = setInterval(showQuote, 7000);
+            quoteInterval = setInterval(nextQuote, 6000);
         }
 
-        function pauseQuotes() {
-            clearInterval(interval);
-            document.getElementById('pauseBtn').textContent = 'Продолжить';
-            document.getElementById('pauseBtn').onclick = () => {
+        function toggleQuotes() {
+            const btn = document.getElementById('pauseBtn');
+            if (isPaused) {
                 startQuotes();
-                document.getElementById('pauseBtn').textContent = 'Пауза';
-                document.getElementById('pauseBtn').onclick = pauseQuotes;
-            };
+                btn.textContent = 'Пауза';
+                isPaused = false;
+            } else {
+                clearInterval(quoteInterval);
+                btn.textContent = 'Продолжить';
+                isPaused = true;
+            }
         }
 
+        // Инициализация цитат
+        showQuote(0);
         startQuotes();
 
-        // Анимация появления
-        const observer = new IntersectionObserver(entries => {
+        // Анимация появления секций при скролле
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.2 });
+        }, { threshold: 0.1 });
 
-        document.querySelectorAll('.timeline-card, .neuro-canvas, section').forEach(el => {
-            el.classList.add('opacity-0', 'translate-y-10');
-            el.style.transition = 'all 1s cubic-bezier(0.22, 1, 0.36, 1)';
-            observer.observe(el);
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Плавное появление при загрузке
+        window.addEventListener('load', () => {
+            document.querySelectorAll('section').forEach((section, index) => {
+                setTimeout(() => {
+                    section.classList.add('visible');
+                }, index * 200);
+            });
         });
     </script>
 </body>
