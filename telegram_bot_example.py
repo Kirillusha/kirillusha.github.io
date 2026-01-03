@@ -1,134 +1,164 @@
-# Telegram Bot Example для работы с API
+# Telegram Bot Example для работы с API (aiogram 3)
 
-import requests
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+import asyncio
+import random
+import logging
+from aiogram import Bot, Dispatcher, Router, F
+from aiogram.filters import Command, CommandObject
+from aiogram.types import Message
+from aiogram.enums import ParseMode
+import aiohttp
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # URL вашего API на GitHub Pages
 API_BASE_URL = "https://kirillusha.github.io/api"
 
-# Получение данных с API
-def get_quotes():
+# Роутер для обработки команд
+router = Router()
+
+# Получение данных с API (асинхронно)
+async def get_quotes():
     """Получить все цитаты"""
-    response = requests.get(f"{API_BASE_URL}/quotes.json")
-    if response.status_code == 200:
-        return response.json()["quotes"]
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(f"{API_BASE_URL}/quotes.json") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data["quotes"]
+        except Exception as e:
+            logger.error(f"Ошибка получения цитат: {e}")
     return []
 
-def get_timeline():
+async def get_timeline():
     """Получить хронологию"""
-    response = requests.get(f"{API_BASE_URL}/timeline.json")
-    if response.status_code == 200:
-        return response.json()["events"]
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(f"{API_BASE_URL}/timeline.json") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data["events"]
+        except Exception as e:
+            logger.error(f"Ошибка получения хронологии: {e}")
     return []
 
-def get_paintings():
+async def get_paintings():
     """Получить картины"""
-    response = requests.get(f"{API_BASE_URL}/paintings.json")
-    if response.status_code == 200:
-        return response.json()["paintings"]
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(f"{API_BASE_URL}/paintings.json") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data["paintings"]
+        except Exception as e:
+            logger.error(f"Ошибка получения картин: {e}")
     return []
 
 # Команды бота
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+@router.message(Command("start"))
+async def cmd_start(message: Message):
     """Команда /start"""
-    await update.message.reply_text(
-        "🎨 Привет! Я бот об Александре Невском.\n\n"
+    await message.answer(
+        "🎨 <b>Привет! Я бот об Александре Невском.</b>\n\n"
         "Доступные команды:\n"
         "/quote - Случайная цитата\n"
         "/quotes - Все цитаты\n"
         "/timeline - Хронология жизни\n"
         "/paintings - Список картин\n"
-        "/painting <номер> - Информация о картине"
+        "/painting &lt;номер&gt; - Информация о картине",
+        parse_mode=ParseMode.HTML
     )
 
-async def quote(update: Update, context: ContextTypes.DEFAULT_TYPE):
+@router.message(Command("quote"))
+async def cmd_quote(message: Message):
     """Команда /quote - случайная цитата"""
-    quotes = get_quotes()
+    quotes = await get_quotes()
     if quotes:
-        import random
         q = random.choice(quotes)
-        await update.message.reply_text(
-            f"💭 \"{q['text']}\"\n\n"
-            f"— Александр Невский, {q['year']}"
+        await message.answer(
+            f"💭 <i>\"{q['text']}\"</i>\n\n"
+            f"— Александр Невский, {q['year']}",
+            parse_mode=ParseMode.HTML
         )
     else:
-        await update.message.reply_text("Не удалось получить цитаты 😔")
+        await message.answer("Не удалось получить цитаты 😔")
 
-async def quotes_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
+@router.message(Command("quotes"))
+async def cmd_quotes_all(message: Message):
     """Команда /quotes - все цитаты"""
-    quotes = get_quotes()
+    quotes = await get_quotes()
     if quotes:
-        text = "📚 Все цитаты Александра Невского:\n\n"
+        text = "📚 <b>Все цитаты Александра Невского:</b>\n\n"
         for q in quotes:
-            text += f"{q['id']}. \"{q['text']}\" ({q['year']})\n\n"
-        await update.message.reply_text(text)
+            text += f"{q['id']}. <i>\"{q['text']}\"</i> ({q['year']})\n\n"
+        await message.answer(text, parse_mode=ParseMode.HTML)
     else:
-        await update.message.reply_text("Не удалось получить цитаты 😔")
+        await message.answer("Не удалось получить цитаты 😔")
 
-async def timeline(update: Update, context: ContextTypes.DEFAULT_TYPE):
+@router.message(Command("timeline"))
+async def cmd_timeline(message: Message):
     """Команда /timeline - хронология"""
-    events = get_timeline()
+    events = await get_timeline()
     if events:
-        text = "📅 Хронология жизни Александра Невского:\n\n"
+        text = "📅 <b>Хронология жизни Александра Невского:</b>\n\n"
         for event in events:
-            text += f"🗓 {event['year']} — {event['title']}\n"
+            text += f"🗓 <b>{event['year']}</b> — {event['title']}\n"
             text += f"{event['description']}\n\n"
-        await update.message.reply_text(text)
+        await message.answer(text, parse_mode=ParseMode.HTML)
     else:
-        await update.message.reply_text("Не удалось получить хронологию 😔")
+        await message.answer("Не удалось получить хронологию 😔")
 
-async def paintings(update: Update, context: ContextTypes.DEFAULT_TYPE):
+@router.message(Command("paintings"))
+async def cmd_paintings(message: Message):
     """Команда /paintings - список картин"""
-    paintings = get_paintings()
+    paintings = await get_paintings()
     if paintings:
-        text = "🖼 Картины Александра Невского:\n\n"
+        text = "🖼 <b>Картины Александра Невского:</b>\n\n"
         for p in paintings:
-            text += f"{p['id']}. {p['title']} ({p['year']})\n"
-        text += "\nИспользуйте /painting <номер> для подробностей"
-        await update.message.reply_text(text)
+            text += f"{p['id']}. <b>{p['title']}</b> ({p['year']})\n"
+        text += "\nИспользуйте /painting &lt;номер&gt; для подробностей"
+        await message.answer(text, parse_mode=ParseMode.HTML)
     else:
-        await update.message.reply_text("Не удалось получить список картин 😔")
+        await message.answer("Не удалось получить список картин 😔")
 
-async def painting_detail(update: Update, context: ContextTypes.DEFAULT_TYPE):
+@router.message(Command("painting"))
+async def cmd_painting_detail(message: Message, command: CommandObject):
     """Команда /painting <id> - детали картины"""
-    if not context.args:
-        await update.message.reply_text("Укажите номер картины: /painting 1")
+    if not command.args:
+        await message.answer("Укажите номер картины: /painting 1")
         return
     
     try:
-        painting_id = int(context.args[0])
-        paintings = get_paintings()
+        painting_id = int(command.args.split()[0])
+        paintings = await get_paintings()
         painting = next((p for p in paintings if p['id'] == painting_id), None)
         
         if painting:
-            text = f"🎨 {painting['title']}\n\n"
+            text = f"🎨 <b>{painting['title']}</b>\n\n"
             text += f"📅 Год: {painting['year']}\n"
             text += f"📍 Местонахождение: {painting['location']}\n"
             text += f"🎨 Цвета: {', '.join(painting['colors'])}\n\n"
             text += f"📝 {painting['description']}"
-            await update.message.reply_text(text)
+            await message.answer(text, parse_mode=ParseMode.HTML)
         else:
-            await update.message.reply_text(f"Картина #{painting_id} не найдена")
-    except ValueError:
-        await update.message.reply_text("Неверный формат. Используйте: /painting 1")
+            await message.answer(f"Картина #{painting_id} не найдена")
+    except (ValueError, IndexError):
+        await message.answer("Неверный формат. Используйте: /painting 1")
 
-def main():
+async def main():
     """Запуск бота"""
     # Замените 'YOUR_BOT_TOKEN' на токен вашего бота
-    application = Application.builder().token("YOUR_BOT_TOKEN").build()
+    bot = Bot(token="YOUR_BOT_TOKEN")
+    dp = Dispatcher()
     
-    # Регистрация команд
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("quote", quote))
-    application.add_handler(CommandHandler("quotes", quotes_all))
-    application.add_handler(CommandHandler("timeline", timeline))
-    application.add_handler(CommandHandler("paintings", paintings))
-    application.add_handler(CommandHandler("painting", painting_detail))
+    # Подключаем роутер
+    dp.include_router(router)
     
     # Запуск бота
-    print("Бот запущен!")
-    application.run_polling()
+    logger.info("Бот запущен!")
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

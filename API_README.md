@@ -61,11 +61,16 @@ https://kirillusha.github.io/api
 }
 ```
 
-## 🤖 Использование в Telegram боте
+## 🤖 Использование в Telegram боте (aiogram 3)
 
 ### Установка зависимостей
 ```bash
-pip install python-telegram-bot requests
+pip install -r requirements.txt
+```
+
+или вручную:
+```bash
+pip install aiogram aiohttp
 ```
 
 ### Запуск
@@ -82,12 +87,32 @@ pip install python-telegram-bot requests
 - `/paintings` - Список картин
 - `/painting 1` - Детали картины #1
 
+## 🆕 Особенности aiogram 3
+
+Бот использует современные возможности aiogram 3:
+- **Роутеры** - для организации обработчиков
+- **Декораторы** - для регистрации команд
+- **Async/await** - полностью асинхронный код
+- **aiohttp** - асинхронные HTTP запросы
+- **HTML разметка** - красивое форматирование сообщений
+- **CommandObject** - удобная работа с аргументами команд
+
+### Пример кода
+```python
+@router.message(Command("quote"))
+async def cmd_quote(message: Message):
+    quotes = await get_quotes()
+    q = random.choice(quotes)
+    await message.answer(f"💭 <i>\"{q['text']}\"</i>")
+```
+
 ## ⚠️ Ограничения
 
 ✅ **Работает:**
 - GET запросы (чтение данных)
 - Публичный доступ без авторизации
 - CORS включен по умолчанию в GitHub Pages
+- Асинхронные запросы (быстрая работа)
 
 ❌ **Не работает:**
 - POST/PUT/DELETE запросы (запись данных)
@@ -107,12 +132,10 @@ pip install python-telegram-bot requests
 Вы можете использовать GitHub Issues/Gists для хранения динамических данных:
 
 ```python
-# Пример чтения данных из GitHub Gist
-import requests
-
-gist_id = "YOUR_GIST_ID"
-response = requests.get(f"https://api.github.com/gists/{gist_id}")
-data = response.json()
+# Пример чтения данных из GitHub Gist (async)
+async with aiohttp.ClientSession() as session:
+    async with session.get(f"https://api.github.com/gists/{gist_id}") as response:
+        data = await response.json()
 ```
 
 ### CORS
