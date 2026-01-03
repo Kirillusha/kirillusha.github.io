@@ -3,41 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="Александр Невский — человек, который рисует сны. Вымышленная история, хронология, галерея и цитаты.">
     <title>Александр Невский — человек, который рисует сны</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'float': 'float 20s ease-in-out infinite',
-                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { background: #000; color: #e0e0ff; }
-        .parallax { perspective: 1px; height: 100vh; overflow-x: hidden; overflow-y: auto; transform-style: preserve-3d; }
-        .layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-style: preserve-3d; }
-        .back { 
-            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3132&h=2000&fit=crop') center/cover no-repeat fixed;
-            transform: translateZ(-2px) scale(3);
-            opacity: 0.4;
-        }
-        .mid {
-            background: url('https://images.unsplash.com/photo-1543783207-5d04aac5f11d?q=80&w=2000') center/cover no-repeat;
-            transform: translateZ(-1px) scale(2);
-            opacity: 0.3;
-        }
-        .neuro-paint {
-            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(100, 100, 255, 0.3); border-radius: 4px; }
-    </style>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link rel="stylesheet" href="./assets/styles.css">
 </head>
 <body class="min-h-screen parallax antialiased">
 
@@ -49,10 +19,10 @@
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-wider">АЛЕКСАНДР НЕВСКИЙ</h1>
             <div class="flex gap-8">
-                <button onclick="scrollToSection('home')" class="nav-btn">Главная</button>
-                <button onclick="scrollToSection('timeline')" class="nav-btn">Хронология</button>
-                <button onclick="scrollToSection('gallery')" class="nav-btn">Картины</button>
-                <button onclick="scrollToSection('quotes')" class="nav-btn">Цитаты</button>
+                <button data-scroll-to="home" class="nav-btn">Главная</button>
+                <button data-scroll-to="timeline" class="nav-btn">Хронология</button>
+                <button data-scroll-to="gallery" class="nav-btn">Картины</button>
+                <button data-scroll-to="quotes" class="nav-btn">Цитаты</button>
             </div>
             <div class="text-xs opacity-60">1987 – ∞</div>
         </div>
@@ -68,7 +38,7 @@
             <p class="text-xl opacity-70 max-w-2xl mx-auto leading-relaxed">
                 «Я не рисую картины. Я daю краске свободу дышать эмоциями тех — кто стоит перед ней.»
             </p>
-            <button onclick="scrollToSection('timeline')" class="mt-16 px-12 py-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-xl font-medium transition-all hover:scale-105">
+            <button data-scroll-to="timeline" class="mt-16 px-12 py-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-xl font-medium transition-all hover:scale-105">
                 Узнать историю →
             </button>
         </div>
@@ -119,21 +89,21 @@
             <h2 class="text-6xl font-bold text-center mb-20">Картины, которые дышат</h2>
             <p class="text-center text-xl mb-12 opacity-80">Двигайте мышью по полотнам — краска чувствует вас</p>
             <div class="grid md:grid-cols-3 gap-10">
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair">
                     <div class="neuro-paint w-full h-96 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900"></div>
                     <div class="p-6 text-center">
                         <h3 class="text-2xl font-bold">Сны Сибири</h3>
                         <p class="opacity-75">2015 – настоящее время</p>
                     </div>
                 </div>
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair">
                     <div class="neuro-paint w-full h-96 bg-gradient-to-tr from-pink-900 via-indigo-900 to-teal-900"></div>
                     <div class="p-6 text-center">
                         <h3 class="text-2xl font-bold">Трещина подо льдом</h3>
                         <p class="opacity-75">2023</p>
                     </div>
                 </div>
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair">
                     <div class="neuro-paint w-full h-96 bg-gradient-to-bl from-emerald-900 via-purple-900 to-amber-900"></div>
                     <div class="p-6 text-center">
                         <h3 class="text-2xl font-bold">Эмоция №7</h3>
@@ -154,7 +124,7 @@
                 </div>
             </div>
             <div class="flex justify-center gap-4 mt-10">
-                <button onclick="pauseQuotes()" id="pauseBtn" class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 rounded-full">Пауза</button>
+                <button id="pauseBtn" class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 rounded-full">Пауза</button>
             </div>
         </div>
     </section>
@@ -177,8 +147,14 @@
     <script>
         // Плавный скролл
         function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            const target = document.getElementById(id);
+            if (!target) return;
+            target.scrollIntoView({ behavior: 'smooth' });
         }
+
+        document.querySelectorAll('[data-scroll-to]').forEach(btn => {
+            btn.addEventListener('click', () => scrollToSection(btn.dataset.scrollTo));
+        });
 
         // Модальное окно хронологии
         document.querySelectorAll('.timeline-card').forEach(card => {
@@ -195,16 +171,37 @@
         }
 
         // Нейро-краска
-        function paintReact(e, el) {
-            const rect = el.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            el.querySelector('.neuro-paint').style.background = `radial-gradient(circle at ${x}px ${y}px, #a78bfa, #22d3ee, #f472b6, #fcd34d 80%)`;
+        const paintState = new WeakMap();
+        function schedulePaint(el, x, y) {
+            const state = paintState.get(el) || { raf: 0, x: 0, y: 0 };
+            state.x = x;
+            state.y = y;
+            if (state.raf) {
+                paintState.set(el, state);
+                return;
+            }
+            state.raf = requestAnimationFrame(() => {
+                const paint = el.querySelector('.neuro-paint');
+                if (paint) {
+                    paint.style.background = `radial-gradient(circle at ${state.x}px ${state.y}px, #a78bfa, #22d3ee, #f472b6, #fcd34d 80%)`;
+                }
+                state.raf = 0;
+            });
+            paintState.set(el, state);
         }
 
         function paintReset(el) {
-            el.querySelector('.neuro-paint').style.background = '';
+            const paint = el.querySelector('.neuro-paint');
+            if (paint) paint.style.background = '';
         }
+
+        document.querySelectorAll('.neuro-canvas').forEach(el => {
+            el.addEventListener('pointermove', (e) => {
+                const rect = el.getBoundingClientRect();
+                schedulePaint(el, e.clientX - rect.left, e.clientY - rect.top);
+            }, { passive: true });
+            el.addEventListener('pointerleave', () => paintReset(el), { passive: true });
+        });
 
         // Цитаты карусель
         const quotes = [
@@ -243,19 +240,20 @@
         }
 
         startQuotes();
+        document.getElementById('pauseBtn').onclick = pauseQuotes;
 
         // Анимация появления
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.add('reveal--visible');
+                    observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.2 });
 
         document.querySelectorAll('.timeline-card, .neuro-canvas, section').forEach(el => {
-            el.classList.add('opacity-0', 'translate-y-10');
-            el.style.transition = 'all 1s cubic-bezier(0.22, 1, 0.36, 1)';
+            el.classList.add('reveal');
             observer.observe(el);
         });
     </script>
