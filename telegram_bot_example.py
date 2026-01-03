@@ -1,8 +1,11 @@
-# Telegram Bot Example для работы с API (aiogram 3)
+# Telegram Bot с локальным и удаленным API (aiogram 3)
 
 import asyncio
 import random
 import logging
+import os
+import json
+from pathlib import Path
 from aiogram import Bot, Dispatcher, Router, F
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
@@ -16,58 +19,103 @@ logger = logging.getLogger(__name__)
 # URL вашего API на GitHub Pages
 API_BASE_URL = "https://kirillusha.github.io/api"
 
+# Путь к локальным файлам (для тестирования)
+LOCAL_API_PATH = Path(__file__).parent / "api"
+
+# Режим работы: local или remote
+USE_LOCAL_API = True  # Установите False когда опубликуете на GitHub Pages
+
 # Роутер для обработки команд
 router = Router()
 
-# Получение данных с API (асинхронно)
-async def get_quotes():
-    """Получить все цитаты"""
+# Получение данных с API (с поддержкой локального режима)
+async def get_data_from_file(filename: str):
+    """Получить данные из локального файла"""
+    try:
+        file_path = LOCAL_API_PATH / filename
+        if file_path.exists():
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        else:
+            logger.error(f"Локальный файл не найден: {file_path}")
+    except Exception as e:
+        logger.error(f"Ошибка чтения локального файла {filename}: {e}")
+    return None
+
+async def get_data_from_url(url: str):
+    """Получить данные из удаленного API"""
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.get(f"{API_BASE_URL}/quotes.json") as response:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as response:
                 if response.status == 200:
-                    data = await response.json()
-                    return data["quotes"]
+                    return await response.json()
+                else:
+                    logger.error(f"HTTP {response.status} при запросе к {url}")
+        except asyncio.TimeoutError:
+            logger.error(f"Таймаут при запросе к {url}")
         except Exception as e:
-            logger.error(f"Ошибка получения цитат: {e}")
-    return []
+            logger.error(f"Ошибка запроса к {url}: {e}")
+    return None
+
+async def get_quotes():
+    """Получить все цитаты"""
+    if USE_LOCAL_API:
+        logger.info("Используется локальный API для quotes")
+        data = await get_data_from_file("quotes.json")
+    else:
+        logger.info("Используется удаленный API для quotes")
+        data = await get_data_from_url(f"{API_BASE_URL}/quotes.json")
+    
+    return data.get("quotes", []) if data else []
 
 async def get_timeline():
     """Получить хронологию"""
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(f"{API_BASE_URL}/timeline.json") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    return data["events"]
-        except Exception as e:
-            logger.error(f"Ошибка получения хронологии: {e}")
-    return []
+    if USE_LOCAL_API:
+        logger.info("Используется локальный API для timeline")
+        data = await get_data_from_file("timeline.json")
+    else:
+        logger.info("Используется удаленный API для timeline")
+        data = await get_data_from_url(f"{API_BASE_URL}/timeline.json")
+    
+    return data.get("events", []) if data else []
 
 async def get_paintings():
     """Получить картины"""
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(f"{API_BASE_URL}/paintings.json") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    return data["paintings"]
-        except Exception as e:
-            logger.error(f"Ошибка получения картин: {e}")
-    return []
+    if USE_LOCAL_API:
+        logger.info("Используется локальный API для paintings")
+        data = await get_data_from_file("paintings.json")
+    else:
+        logger.info("Используется удаленный API для paintings")
+        data = await get_data_from_url(f"{API_BASE_URL}/paintings.json")
+    
+    return data.get("paintings", []) if data else []
 
 # Команды бота
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     """Команда /start"""
+    mode = "локальный" if USE_LOCAL_API else "удаленный"
     await message.answer(
-        "🎨 <b>Привет! Я бот об Александре Невском.</b>\n\n"
+        f"🎨 <b>Привет! Я бот об Александре Невском.</b>\n\n"
+        f"<i>Режим API: {mode}</i>\n\n"
         "Доступные команды:\n"
         "/quote - Случайная цитата\n"
         "/quotes - Все цитаты\n"
         "/timeline - Хронология жизни\n"
         "/paintings - Список картин\n"
-        "/painting &lt;номер&gt; - Информация о картине",
+        "/painting &lt;номер&gt; - Информация о картине\n"
+        "/mode - Переключить режим API",
+        parse_mode=ParseMode.HTML
+    )
+
+@router.message(Command("mode"))
+async def cmd_mode(message: Message):
+    """Команда /mode - переключить режим API"""
+    global USE_LOCAL_API
+    USE_LOCAL_API = not USE_LOCAL_API
+    mode = "локальный" if USE_LOCAL_API else "удаленный"
+    await message.answer(
+        f"✅ Режим API изменен на: <b>{mode}</b>",
         parse_mode=ParseMode.HTML
     )
 
@@ -83,7 +131,12 @@ async def cmd_quote(message: Message):
             parse_mode=ParseMode.HTML
         )
     else:
-        await message.answer("Не удалось получить цитаты 😔")
+        await message.answer(
+            "❌ Не удалось получить цитаты 😔\n\n"
+            "Проверьте:\n"
+            "1. Если USE_LOCAL_API=True, проверьте наличие файла api/quotes.json\n"
+            "2. Если USE_LOCAL_API=False, проверьте что сайт опубликован на GitHub Pages"
+        )
 
 @router.message(Command("quotes"))
 async def cmd_quotes_all(message: Message):
@@ -95,7 +148,10 @@ async def cmd_quotes_all(message: Message):
             text += f"{q['id']}. <i>\"{q['text']}\"</i> ({q['year']})\n\n"
         await message.answer(text, parse_mode=ParseMode.HTML)
     else:
-        await message.answer("Не удалось получить цитаты 😔")
+        await message.answer(
+            "❌ Не удалось получить цитаты 😔\n\n"
+            "Используйте /mode для переключения режима API"
+        )
 
 @router.message(Command("timeline"))
 async def cmd_timeline(message: Message):
@@ -108,7 +164,10 @@ async def cmd_timeline(message: Message):
             text += f"{event['description']}\n\n"
         await message.answer(text, parse_mode=ParseMode.HTML)
     else:
-        await message.answer("Не удалось получить хронологию 😔")
+        await message.answer(
+            "❌ Не удалось получить хронологию 😔\n\n"
+            "Используйте /mode для переключения режима API"
+        )
 
 @router.message(Command("paintings"))
 async def cmd_paintings(message: Message):
@@ -121,7 +180,10 @@ async def cmd_paintings(message: Message):
         text += "\nИспользуйте /painting &lt;номер&gt; для подробностей"
         await message.answer(text, parse_mode=ParseMode.HTML)
     else:
-        await message.answer("Не удалось получить список картин 😔")
+        await message.answer(
+            "❌ Не удалось получить список картин 😔\n\n"
+            "Используйте /mode для переключения режима API"
+        )
 
 @router.message(Command("painting"))
 async def cmd_painting_detail(message: Message, command: CommandObject):
@@ -156,8 +218,20 @@ async def main():
     # Подключаем роутер
     dp.include_router(router)
     
+    # Проверка локальных файлов при запуске
+    if USE_LOCAL_API:
+        logger.info(f"🔧 Режим: ЛОКАЛЬНЫЙ API")
+        logger.info(f"📁 Путь к API: {LOCAL_API_PATH}")
+        if not LOCAL_API_PATH.exists():
+            logger.error(f"❌ Папка {LOCAL_API_PATH} не найдена!")
+        else:
+            logger.info(f"✅ Папка API найдена")
+    else:
+        logger.info(f"🌐 Режим: УДАЛЕННЫЙ API")
+        logger.info(f"🔗 URL: {API_BASE_URL}")
+    
     # Запуск бота
-    logger.info("Бот запущен!")
+    logger.info("🚀 Бот запущен!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
