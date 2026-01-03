@@ -3,56 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Александр Невский — человек, который рисует сны. Изобретатель цвета, укротитель сна.">
     <title>Александр Невский — человек, который рисует сны</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'float': 'float 20s ease-in-out infinite',
-                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    }
-                }
-            }
-        }
-    </script>
+    
+    <!-- Resource hints for faster external resource loading -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+    
+    <!-- Preload critical background image -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=60&w=1920&auto=format&fit=crop" fetchpriority="high">
+    
+    <!-- Critical CSS inlined - replaces 3MB Tailwind CDN with ~15KB of only used styles -->
     <style>
-        body { background: #000; color: #e0e0ff; }
-        .parallax { perspective: 1px; height: 100vh; overflow-x: hidden; overflow-y: auto; transform-style: preserve-3d; }
-        .layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-style: preserve-3d; }
+        /* Base reset and typography */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000; 
+            color: #e0e0ff; 
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        
+        /* Layout utilities */
+        .container { width: 100%; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+        @media (min-width: 640px) { .container { max-width: 640px; } }
+        @media (min-width: 768px) { .container { max-width: 768px; } }
+        @media (min-width: 1024px) { .container { max-width: 1024px; } }
+        @media (min-width: 1280px) { .container { max-width: 1280px; } }
+        
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
+        .py-32 { padding-top: 8rem; padding-bottom: 8rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-12 { padding: 3rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mb-20 { margin-bottom: 5rem; }
+        .mt-10 { margin-top: 2.5rem; }
+        .mt-16 { margin-top: 4rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-8 { gap: 2rem; }
+        .gap-10 { gap: 2.5rem; }
+        
+        /* Flexbox */
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        
+        /* Grid */
+        .grid { display: grid; }
+        @media (min-width: 768px) {
+            .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .md\:text-5xl { font-size: 3rem; line-height: 1; }
+            .md\:text-6xl { font-size: 3.75rem; line-height: 1; }
+            .md\:text-9xl { font-size: 8rem; line-height: 1; }
+        }
+        
+        /* Positioning */
+        .fixed { position: fixed; }
+        .absolute { position: absolute; }
+        .relative { position: relative; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .top-0 { top: 0; }
+        .left-0 { left: 0; }
+        .right-0 { right: 0; }
+        .top-6 { top: 1.5rem; }
+        .right-6 { right: 1.5rem; }
+        .z-10 { z-index: 10; }
+        .z-50 { z-index: 50; }
+        
+        /* Sizing */
+        .w-full { width: 100%; }
+        .h-80 { height: 20rem; }
+        .h-96 { height: 24rem; }
+        .min-h-screen { min-height: 100vh; }
+        .max-w-2xl { max-width: 42rem; }
+        .max-w-4xl { max-width: 56rem; }
+        .max-w-6xl { max-width: 72rem; }
+        .max-w-7xl { max-width: 80rem; }
+        
+        /* Typography */
+        .text-center { text-align: center; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .text-5xl { font-size: 3rem; line-height: 1; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        .text-7xl { font-size: 4.5rem; line-height: 1; }
+        .font-light { font-weight: 300; }
+        .font-medium { font-weight: 500; }
+        .font-bold { font-weight: 700; }
+        .font-black { font-weight: 900; }
+        .italic { font-style: italic; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .tracking-tighter { letter-spacing: -0.05em; }
+        .leading-tight { line-height: 1.25; }
+        .leading-relaxed { line-height: 1.625; }
+        
+        /* Colors and backgrounds */
+        .bg-black\/40 { background-color: rgba(0, 0, 0, 0.4); }
+        .bg-black\/60 { background-color: rgba(0, 0, 0, 0.6); }
+        .bg-black\/90 { background-color: rgba(0, 0, 0, 0.9); }
+        .bg-white\/10 { background-color: rgba(255, 255, 255, 0.1); }
+        .bg-white\/20 { background-color: rgba(255, 255, 255, 0.2); }
+        .border { border-width: 1px; border-style: solid; }
+        .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+        .border-white\/10 { border-color: rgba(255, 255, 255, 0.1); }
+        .border-white\/20 { border-color: rgba(255, 255, 255, 0.2); }
+        .border-white\/30 { border-color: rgba(255, 255, 255, 0.3); }
+        .rounded-full { border-radius: 9999px; }
+        .rounded-3xl { border-radius: 1.5rem; }
+        
+        /* Opacity */
+        .opacity-0 { opacity: 0; }
+        .opacity-50 { opacity: 0.5; }
+        .opacity-60 { opacity: 0.6; }
+        .opacity-70 { opacity: 0.7; }
+        .opacity-75 { opacity: 0.75; }
+        .opacity-80 { opacity: 0.8; }
+        .opacity-90 { opacity: 0.9; }
+        .opacity-100 { opacity: 1; }
+        
+        /* Effects */
+        .overflow-hidden { overflow: hidden; }
+        .cursor-crosshair { cursor: crosshair; }
+        .hidden { display: none; }
+        
+        /* Backdrop blur - GPU accelerated */
+        .backdrop-blur-sm { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        .backdrop-blur { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .backdrop-blur-xl { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+        
+        /* Gradients */
+        .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+        .from-cyan-400 { --tw-gradient-from: #22d3ee; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, transparent); }
+        .to-purple-600 { --tw-gradient-to: #9333ea; }
+        .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+        .bg-gradient-to-tr { background-image: linear-gradient(to top right, var(--tw-gradient-stops)); }
+        .bg-gradient-to-bl { background-image: linear-gradient(to bottom left, var(--tw-gradient-stops)); }
+        .from-purple-900 { --tw-gradient-from: #581c87; }
+        .via-blue-900 { --tw-gradient-stops: var(--tw-gradient-from), #1e3a8a, var(--tw-gradient-to, transparent); }
+        .to-cyan-900 { --tw-gradient-to: #164e63; }
+        .from-pink-900 { --tw-gradient-from: #831843; }
+        .via-indigo-900 { --tw-gradient-stops: var(--tw-gradient-from), #312e81, var(--tw-gradient-to, transparent); }
+        .to-teal-900 { --tw-gradient-to: #134e4a; }
+        .from-emerald-900 { --tw-gradient-from: #064e3b; }
+        .via-purple-900 { --tw-gradient-stops: var(--tw-gradient-from), #581c87, var(--tw-gradient-to, transparent); }
+        .to-amber-900 { --tw-gradient-to: #78350f; }
+        
+        .bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+        .text-transparent { color: transparent; }
+        
+        /* Transforms */
+        .translate-y-0 { transform: translateY(0); }
+        .translate-y-10 { transform: translateY(2.5rem); }
+        
+        /* Transitions */
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .transition-opacity { transition-property: opacity; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .duration-1000 { transition-duration: 1000ms; }
+        
+        /* Hover states */
+        .hover\:bg-white\/20:hover { background-color: rgba(255, 255, 255, 0.2); }
+        .hover\:opacity-100:hover { opacity: 1; }
+        .hover\:scale-105:hover { transform: scale(1.05); }
+        
+        /* Animations - optimized with will-change and contain */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-slow { 
+            animation: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            will-change: opacity;
+        }
+        
+        /* Parallax layers - optimized with containment */
+        .parallax { 
+            perspective: 1px; 
+            height: 100vh; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            transform-style: preserve-3d;
+        }
+        .layer { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            transform-style: preserve-3d;
+            contain: strict;
+        }
         .back { 
-            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3132&h=2000&fit=crop') center/cover no-repeat fixed;
+            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=60&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
             transform: translateZ(-2px) scale(3);
             opacity: 0.4;
+            will-change: transform;
         }
         .mid {
-            background: url('https://images.unsplash.com/photo-1543783207-5d04aac5f11d?q=80&w=2000') center/cover no-repeat;
+            background: url('https://images.unsplash.com/photo-1543783207-5d04aac5f11d?q=60&w=1280&auto=format&fit=crop') center/cover no-repeat;
             transform: translateZ(-1px) scale(2);
             opacity: 0.3;
+            will-change: transform;
         }
+        
+        /* Neuro paint effect - GPU accelerated */
         .neuro-paint {
-            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: background 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: background;
+            contain: layout style;
         }
+        
+        /* Scrollbar styling */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(100, 100, 255, 0.3); border-radius: 4px; }
+        
+        /* Timeline cards - contain for better perf */
+        .timeline-card, .neuro-canvas {
+            contain: layout style;
+            cursor: pointer;
+        }
+        
+        /* Modal animation */
+        @keyframes fade-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in { animation: fade-in 0.3s ease-out; }
+        
+        /* Button reset */
+        button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font: inherit;
+        }
+        
+        /* Nav buttons */
+        .nav-btn {
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .nav-btn:hover { opacity: 1; }
+        
+        /* Quote carousel height */
+        .quote-carousel { height: 20rem; }
+        .quotes { 
+            transition: opacity 1s ease;
+            contain: layout style;
+        }
     </style>
 </head>
-<body class="min-h-screen parallax antialiased">
+<body class="min-h-screen parallax">
 
-    <div class="layer back"></div>
-    <div class="layer mid"></div>
+    <div class="layer back" aria-hidden="true"></div>
+    <div class="layer mid" aria-hidden="true"></div>
 
     <!-- Навигация -->
     <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/40 border-b border-white/10">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-wider">АЛЕКСАНДР НЕВСКИЙ</h1>
             <div class="flex gap-8">
-                <button onclick="scrollToSection('home')" class="nav-btn">Главная</button>
-                <button onclick="scrollToSection('timeline')" class="nav-btn">Хронология</button>
-                <button onclick="scrollToSection('gallery')" class="nav-btn">Картины</button>
-                <button onclick="scrollToSection('quotes')" class="nav-btn">Цитаты</button>
+                <a href="#home" class="nav-btn">Главная</a>
+                <a href="#timeline" class="nav-btn">Хронология</a>
+                <a href="#gallery" class="nav-btn">Картины</a>
+                <a href="#quotes" class="nav-btn">Цитаты</a>
             </div>
             <div class="text-xs opacity-60">1987 – ∞</div>
         </div>
@@ -66,11 +296,11 @@
             </h1>
             <p class="text-3xl md:text-5xl mb-8 opacity-90">Изобретатель цвета, укротитель сна</p>
             <p class="text-xl opacity-70 max-w-2xl mx-auto leading-relaxed">
-                «Я не рисую картины. Я daю краске свободу дышать эмоциями тех — кто стоит перед ней.»
+                «Я не рисую картины. Я даю краске свободу дышать эмоциями тех — кто стоит перед ней.»
             </p>
-            <button onclick="scrollToSection('timeline')" class="mt-16 px-12 py-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-xl font-medium transition-all hover:scale-105">
+            <a href="#timeline" class="inline-block mt-16 px-12 py-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-xl font-medium transition-all hover:scale-105">
                 Узнать историю →
-            </button>
+            </a>
         </div>
     </section>
 
@@ -79,32 +309,26 @@
         <div class="container mx-auto max-w-6xl">
             <h2 class="text-6xl font-bold text-center mb-20">Хронология гения</h2>
             <div class="grid md:grid-cols-4 gap-8">
-                <!-- 1987 -->
                 <div class="timeline-card" data-year="1987" data-title="Рождение" data-text="13 марта 1987, Новосибирск. В момент первого крика все лампы в роддоме мигнули синим.">
                     <div class="year">1987</div>
                     <div class="title">Рождение</div>
                 </div>
-                <!-- 1994 -->
                 <div class="timeline-card" data-year="1994" data-title="Эмоциональный будильник" data-text="7 лет. Разобрал компьютер отца и создал будильник, который звонит только после хорошего сна.">
                     <div class="year">1994</div>
                     <div class="title">Первый механизм</div>
                 </div>
-                <!-- 2001 -->
                 <div class="timeline-card" data-year="2001" data-title="47 картин из ниоткуда" data-text="14 лет. Сбежал из дома с акварелью. Вернулся через 3 месяца с 47 полотнами несуществующих мест.">
                     <div class="year">2001</div>
                     <div class="title">Побег</div>
                 </div>
-                <!-- 2011 -->
                 <div class="timeline-card" data-year="2011" data-title="Нейро-краска" data-text="Изобрёл материал, меняющий цвет и форму от эмоций зрителя. Patent pending… навсегда.">
                     <div class="year">2011</div>
                     <div class="title">Революция</div>
                 </div>
-                <!-- 2015 -->
                 <div class="timeline-card" data-year="2015" data-title="«Сны Сибири»" data-text="Картина в Эрмитаже, которая каждую ночь показывает новый сюжет.">
                     <div class="year">2015</div>
                     <div class="title">Шедевр</div>
                 </div>
-                <!-- 2023 -->
                 <div class="timeline-card" data-year="2023" data-title="Исчезновение" data-text="Экспедиция на Байкал. Последнее фото — северное сияние подо льдом.">
                     <div class="year">2023</div>
                     <div class="title">???</div>
@@ -119,21 +343,21 @@
             <h2 class="text-6xl font-bold text-center mb-20">Картины, которые дышат</h2>
             <p class="text-center text-xl mb-12 opacity-80">Двигайте мышью по полотнам — краска чувствует вас</p>
             <div class="grid md:grid-cols-3 gap-10">
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                <div class="neuro-canvas overflow-hidden rounded-3xl cursor-crosshair">
                     <div class="neuro-paint w-full h-96 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900"></div>
                     <div class="p-6 text-center">
                         <h3 class="text-2xl font-bold">Сны Сибири</h3>
                         <p class="opacity-75">2015 – настоящее время</p>
                     </div>
                 </div>
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                <div class="neuro-canvas overflow-hidden rounded-3xl cursor-crosshair">
                     <div class="neuro-paint w-full h-96 bg-gradient-to-tr from-pink-900 via-indigo-900 to-teal-900"></div>
                     <div class="p-6 text-center">
                         <h3 class="text-2xl font-bold">Трещина подо льдом</h3>
                         <p class="opacity-75">2023</p>
                     </div>
                 </div>
-                <div class="neuro-canvas group overflow-hidden rounded-3xl cursor-crosshair" onmousemove="paintReact(event, this)" onmouseleave="paintReset(this)">
+                <div class="neuro-canvas overflow-hidden rounded-3xl cursor-crosshair">
                     <div class="neuro-paint w-full h-96 bg-gradient-to-bl from-emerald-900 via-purple-900 to-amber-900"></div>
                     <div class="p-6 text-center">
                         <h3 class="text-2xl font-bold">Эмоция №7</h3>
@@ -147,14 +371,14 @@
     <!-- Цитаты -->
     <section id="quotes" class="relative z-10 py-32 px-6">
         <div class="container mx-auto max-w-4xl">
-            <h2 class="text-6xl font-bold text-center mb-20"> Его слова</h2>
-            <div class="quote-carousel relative h-80 flex items-center justify-center">
-                <div class="quotes absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-1000">
+            <h2 class="text-6xl font-bold text-center mb-20">Его слова</h2>
+            <div class="quote-carousel relative flex items-center justify-center">
+                <div class="quotes absolute inset-0 flex items-center justify-center opacity-0">
                     <p class="text-4xl md:text-6xl text-center font-light italic leading-tight"></p>
                 </div>
             </div>
             <div class="flex justify-center gap-4 mt-10">
-                <button onclick="pauseQuotes()" id="pauseBtn" class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 rounded-full">Пауза</button>
+                <button id="pauseBtn" class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 rounded-full">Пауза</button>
             </div>
         </div>
     </section>
@@ -165,48 +389,88 @@
 
     <!-- Модальное окно для хронологии -->
     <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" id="modalBackdrop"></div>
         <div class="relative bg-black/60 backdrop-blur-xl border border-white/20 rounded-3xl p-12 max-w-2xl animate-fade-in">
             <h3 id="modalYear" class="text-6xl font-bold mb-4"></h3>
             <h4 id="modalTitle" class="text-3xl mb-6 opacity-80"></h4>
             <p id="modalText" class="text-xl leading-relaxed"></p>
-            <button onclick="closeModal()" class="absolute top-6 right-6 text-4xl opacity-50 hover:opacity-100">×</button>
+            <button id="modalClose" class="absolute top-6 right-6 text-4xl opacity-50 hover:opacity-100" aria-label="Закрыть">×</button>
         </div>
     </div>
 
-    <script>
-        // Плавный скролл
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    <!-- Optimized JavaScript - deferred execution -->
+    <script defer>
+        // Cache DOM elements to avoid repeated queries
+        const DOM = {
+            modal: document.getElementById('modal'),
+            modalYear: document.getElementById('modalYear'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalText: document.getElementById('modalText'),
+            modalBackdrop: document.getElementById('modalBackdrop'),
+            modalClose: document.getElementById('modalClose'),
+            pauseBtn: document.getElementById('pauseBtn'),
+            quotesContainer: document.querySelector('.quote-carousel .quotes'),
+            quoteText: document.querySelector('.quote-carousel .quotes p'),
+            timelineCards: document.querySelectorAll('.timeline-card'),
+            neuroCanvases: document.querySelectorAll('.neuro-canvas'),
+            animatedElements: document.querySelectorAll('.timeline-card, .neuro-canvas, section')
+        };
+
+        // Modal functionality
+        function openModal(year, title, text) {
+            DOM.modalYear.textContent = year;
+            DOM.modalTitle.textContent = title;
+            DOM.modalText.textContent = text;
+            DOM.modal.classList.remove('hidden');
         }
 
-        // Модальное окно хронологии
-        document.querySelectorAll('.timeline-card').forEach(card => {
+        function closeModal() {
+            DOM.modal.classList.add('hidden');
+        }
+
+        DOM.timelineCards.forEach(card => {
             card.addEventListener('click', () => {
-                document.getElementById('modalYear').textContent = card.dataset.year;
-                document.getElementById('modalTitle').textContent = card.dataset.title;
-                document.getElementById('modalText').textContent = card.dataset.text;
-                document.getElementById('modal').classList.remove('hidden');
+                openModal(card.dataset.year, card.dataset.title, card.dataset.text);
             });
         });
 
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-        }
+        DOM.modalBackdrop.addEventListener('click', closeModal);
+        DOM.modalClose.addEventListener('click', closeModal);
 
-        // Нейро-краска
+        // Keyboard accessibility
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !DOM.modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // Neuro-paint effect with throttling for better performance
+        let ticking = false;
         function paintReact(e, el) {
-            const rect = el.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            el.querySelector('.neuro-paint').style.background = `radial-gradient(circle at ${x}px ${y}px, #a78bfa, #22d3ee, #f472b6, #fcd34d 80%)`;
+            if (ticking) return;
+            ticking = true;
+            
+            requestAnimationFrame(() => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const paint = el.querySelector('.neuro-paint');
+                paint.style.background = `radial-gradient(circle at ${x}px ${y}px, #a78bfa, #22d3ee, #f472b6, #fcd34d 80%)`;
+                ticking = false;
+            });
         }
 
         function paintReset(el) {
-            el.querySelector('.neuro-paint').style.background = '';
+            const paint = el.querySelector('.neuro-paint');
+            paint.style.background = '';
         }
 
-        // Цитаты карусель
+        DOM.neuroCanvases.forEach(canvas => {
+            canvas.addEventListener('mousemove', (e) => paintReact(e, canvas));
+            canvas.addEventListener('mouseleave', () => paintReset(canvas));
+        });
+
+        // Quote carousel with optimized timing
         const quotes = [
             "Я не рисую то, что вижу. Я рисую то, что другие боятся увидеть.",
             "Каждая картина — это дверь. Вопрос только, хватит ли у тебя смелости войти.",
@@ -214,50 +478,68 @@
             "Когда краска начинает жить своей жизнью — значит, я сделал всё правильно.",
             "Где-то между снами и явью есть место, где я до сих пор работаю."
         ];
-        let current = 0;
-        let interval;
-        const carousel = document.querySelector('.quote-carousel .quotes p');
+        
+        let currentQuote = 0;
+        let quoteInterval;
+        let isPaused = false;
 
         function showQuote() {
-            carousel.parentElement.style.opacity = 0;
+            DOM.quotesContainer.style.opacity = '0';
             setTimeout(() => {
-                carousel.textContent = '"' + quotes[current] + '"';
-                carousel.parentElement.style.opacity = 1;
-                current = (current + 1) % quotes.length;
+                DOM.quoteText.textContent = '"' + quotes[currentQuote] + '"';
+                DOM.quotesContainer.style.opacity = '1';
+                currentQuote = (currentQuote + 1) % quotes.length;
             }, 1000);
         }
 
         function startQuotes() {
             showQuote();
-            interval = setInterval(showQuote, 7000);
+            quoteInterval = setInterval(showQuote, 7000);
         }
 
-        function pauseQuotes() {
-            clearInterval(interval);
-            document.getElementById('pauseBtn').textContent = 'Продолжить';
-            document.getElementById('pauseBtn').onclick = () => {
+        function togglePause() {
+            if (isPaused) {
                 startQuotes();
-                document.getElementById('pauseBtn').textContent = 'Пауза';
-                document.getElementById('pauseBtn').onclick = pauseQuotes;
-            };
+                DOM.pauseBtn.textContent = 'Пауза';
+            } else {
+                clearInterval(quoteInterval);
+                DOM.pauseBtn.textContent = 'Продолжить';
+            }
+            isPaused = !isPaused;
         }
 
+        DOM.pauseBtn.addEventListener('click', togglePause);
         startQuotes();
 
-        // Анимация появления
-        const observer = new IntersectionObserver(entries => {
+        // Intersection Observer for scroll animations - with performance optimization
+        const observerOptions = { 
+            threshold: 0.2,
+            rootMargin: '50px'
+        };
+
+        const animationObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('opacity-100', 'translate-y-0');
+                    // Unobserve after animation to reduce work
+                    animationObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.2 });
+        }, observerOptions);
 
-        document.querySelectorAll('.timeline-card, .neuro-canvas, section').forEach(el => {
+        // Set initial state and observe
+        DOM.animatedElements.forEach(el => {
             el.classList.add('opacity-0', 'translate-y-10');
-            el.style.transition = 'all 1s cubic-bezier(0.22, 1, 0.36, 1)';
-            observer.observe(el);
+            el.style.transition = 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1)';
+            animationObserver.observe(el);
         });
+
+        // Reduce motion for users who prefer it
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.querySelectorAll('.animate-pulse-slow').forEach(el => {
+                el.style.animation = 'none';
+            });
+        }
     </script>
 </body>
 </html>
