@@ -1,0 +1,28 @@
+{
+  "api": {
+    "version": "1.0",
+    "base_url": "https://kirillusha.github.io/api",
+    "endpoints": [
+      {
+        "path": "/quotes.json",
+        "description": "Цитаты Александра Невского",
+        "method": "GET"
+      },
+      {
+        "path": "/timeline.json",
+        "description": "Хронология событий жизни",
+        "method": "GET"
+      },
+      {
+        "path": "/paintings.json",
+        "description": "Информация о картинах",
+        "method": "GET"
+      }
+    ]
+  },
+  "info": {
+    "author": "Александр Невский",
+    "site": "https://kirillusha.github.io",
+    "updated": "2025-01-03"
+  }
+}
